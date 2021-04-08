@@ -1032,7 +1032,7 @@ Email Service Providers
 =======================
 
 <details>
-  <summary>CGmail prerequisites (lick to expand)</summary>
+  <summary>Gmail prerequisites (lick to expand)</summary>
 
 Gmail prevents IMAP access by default.
 
