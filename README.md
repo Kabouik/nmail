@@ -167,7 +167,7 @@ Getting Started
 ===============
 
 <details>
-  <summary>Account setup (click to expand)</summary>i
+  <summary>Account setup (click to expand)</summary>
 
 Gmail Password Authenticated Setup
 ----------------------------------
@@ -1031,11 +1031,8 @@ Custom OAuth 2.0 client secret.
 Email Service Providers
 =======================
 
-Gmail Prerequisites
--------------------
-
 <details>
-  <summary>Click to expand</summary>i
+  <summary>CGmail prerequisites (lick to expand)</summary>
 
 Gmail prevents IMAP access by default.
 
