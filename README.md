@@ -394,7 +394,7 @@ The following files can be edited to configure nmail:
 ------------------
 
 <details>
-  <summary>`~/.nmail/main.conf` (click to expand example and documentation)</summary)
+  <summary>Click to expand example and documentation</summary>
 
     address=example@example.com
     addressbook_encrypt=0
@@ -645,7 +645,7 @@ Allows forcing nmail to enable specified logging level:
 ----------------
 
 <details>
-  <summary>`~/.nmail/ui.conf` (click to expand example and documentation)</summary>
+  <summary>Click to expand example and documentation</summary>
 
 This configuration file controls the UI aspects of nmail. Default configuration
 file (platform-dependent defaults are left empty below):
@@ -913,7 +913,7 @@ For a more graphical interface, an emoji such as `✉` can be used.
 --------------------
 
 <details>
-  <summary>`~/.nmail/colors.conf` (click to expand example and documentation)</summary>
+  <summary>Click to expand example and documentation</summary>
 
 This configuration file controls the configurable colors of nmail. For this
 configuration to take effect, `colors_enabled=1` must be set in
@@ -1008,7 +1008,7 @@ Top / title bar.
 ------------------
 
 <details>
-  <summary>`~/.nmail/auth.conf` (click to expand)</summary>
+  <summary>Click to expand documentation</summary>
 
 This configuration file allows users to set up custom OAuth 2.0 client id and
 client secret. If not specified, nmail uses its own application id and secret.
