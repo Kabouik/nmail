@@ -30,7 +30,7 @@ Features
 
 Not Supported / Out of Scope
 ----------------------------
-- Local mailbox downloaded by third-party application (OfflineIMAP, fdm, etc)
+- Local mailbox downloaded by third-party application (OfflineIMAP, fdm, etc.)
 - Multiple email accounts in a single session
 - Special handling for Gmail labels
 - Threaded view
@@ -96,6 +96,8 @@ tested on:
 
 Build / Install
 ===============
+<details>
+  <summary>Linux / Ubuntu (click to expand)</summary>
 
 Linux / Ubuntu
 --------------
@@ -125,6 +127,10 @@ Optional (to view/compose HTML emails):
 **Install**
 
     sudo make install
+</details>
+
+<details>
+  <summary>macOS (click to expand)</summary>
 
 macOS
 -----
@@ -154,10 +160,14 @@ Optional (to view/compose HTML emails):
 **Install**
 
     make install
+</details>
 
 
 Getting Started
 ===============
+
+<details>
+  <summary>Account setup (click to expand)</summary>i
 
 Gmail Password Authenticated Setup
 ----------------------------------
@@ -219,7 +229,172 @@ and fill out the required fields:
     trash=Trash
     user=example@example.com
 
-Full example of a config file `~/.nmail/main.conf`:
+See [below](https://github.com/d99kris/nmail#nmailmainconf) for a full example of a config file.
+
+</details>
+
+Multiple Email Accounts
+=======================
+
+nmail does not currently support multiple email accounts in a single session.
+It is however possible to run multiple nmail instances in parallel with
+different config directories (and thus different email accounts), but it will
+be just that - multiple instances - each in its own terminal. To facilitate
+such usage one can set up aliases for accessing different accounts, e.g.:
+
+    alias gm='nmail -d ${HOME}/.nmail-gm' # gmail
+    alias hm='nmail -d ${HOME}/.nmail-hm' # hotmail
+
+
+Compose Editor
+==============
+
+nmail can be configured to use an external text editor, but comes with a built-in email compose editor that supports the following:
+
+    Alt-Backspace  delete previous word
+    Alt-Delete     delete next word
+    Alt-Left       move the cursor backward one word
+    Alt-Right      move the cursor forward one word
+    Arrow keys     move the cursor
+    Backspace      backspace
+    Ctrl-C         cancel message
+    Ctrl-E         edit message in external editor
+    Ctrl-K         delete current line
+    Ctrl-N         toggle markdown editing
+    Ctrl-O         postpone message
+    Ctrl-R         toggle rich headers (bcc)
+    Ctrl-T         to select, from address book / from file dialog
+    Ctrl-V         preview html part (using markdown to html conversion)
+    Ctrl-X         send message
+    Delete         delete
+    Enter          new line
+    Page Up/Down   move the cursor page up / down
+
+The email headers `To`, `Cc` and `Attchmnt` support comma-separated values, ex:
+
+    To      : Alice <alice@example.com>, Bob <bob@example.com>
+    Cc      : Chuck <chuck@example.com>, Dave <dave@example.com>
+    Attchmnt: localpath.txt, /tmp/absolutepath.txt
+    Subject : Hello world
+
+Attachment paths may be local (just filename) or absolute (full path).
+
+
+Email Search
+============
+
+Press `/` in the message list view to search the local cache for an email. The
+local cache can be fully syncronized with server by pressing `s`. The search
+engine supports queries with `"quoted strings"`, `+musthave`, `-mustnothave`,
+`AND` and `OR`. By default search query words are combined with `AND` unless
+specified. Results are sorted by email timestamp.
+
+Press `<` or `Left` to exit search results and go back to current folder
+message list.
+
+
+Reporting Bugs
+==============
+
+<details>
+  <summary>Click to expand</summary>
+
+The preferred way of reporting bugs is by opening
+[a Github issue](https://github.com/d99kris/nmail/issues/new). Providing a
+copy of `~/.nmail/log.txt` when reporting the issue is preferred.
+
+A verbose logging mode is supported. It produces very large log files with
+detailed information. The verbose logs typically contain actual email contents.
+Review and edit such logs to remove any private information before sharing.
+To enable verbose logging:
+
+    nmail --verbose
+
+Verbose logging can also be enabled by setting `verbose_logging=1` in
+`~/.nmail/main.conf`.
+
+Finally, for issues where the logging above does not provide sufficient
+information, it may be necessary to run nmail through a debugger and capture
+detailed backtraces for all threads when an issue occurs. A simple utility
+is provided to run `nmail` through a debugger in the source package. Example
+usage:
+
+    ./utils/debug-nmail.sh
+
+The utility also supports passing arguments to nmail, enabling running nmail
+with a custom config directory, for example:
+
+    ./utils/debug-nmail.sh -d ~/.nmail-hm
+
+Once nmail exits, either normally or caused by a crash, the script outputs
+information on where to obtain the log file, for example:
+
+    gdb log file written to:
+    /tmp/nmail-gdb-5244.txt
+
+Review the resulting log file and ensure there are no clear text passwords
+in it, before sharing it with others.
+
+</details>
+
+
+User Discussion Forums
+======================
+
+<details>
+  <summary>Click to expand</summary>
+
+For discussing nmail usage (including getting help from other users) a mailing
+list and a Telegram group are available.
+
+Bug reports and feature requests should however be reported using
+[Github issues](https://github.com/d99kris/nmail/issues/new) to ensure they
+are properly tracked and get addressed.
+
+Mailing List
+------------
+Feel free to subscribe at
+[www.freelists.org/list/nmail-users](http://www.freelists.org/list/nmail-users)
+and once subscribed, send messages to nmail-users [at] freelists [dot] org
+
+Telegram Group
+--------------
+The Telegram group is available at
+[https://t.me/nmailusers](https://t.me/nmailusers)
+
+</details>
+
+
+Security
+========
+
+nmail caches data locally to improve performance. By default the cached
+data is encrypted (`cache_encrypt=1` in `main.conf`). Messages are encrypted
+using OpenSSL AES256-CBC with a key derived from a random salt and the
+email account password. Folder names are hashed using SHA256 (thus
+not encrypted).
+
+Using the command line tool `openssl` it is possible to decrypt locally
+cached messages / headers. Example (enter email account password at prompt):
+
+    openssl enc -d -aes-256-cbc -md sha1 -in ~/.nmail/cache/imap/B5/152.eml
+
+Storing the account password (`save_pass=1` in `main.conf`) is *not* secure.
+While nmail encrypts the password, the key is trivial to determine from
+the source code. Only store the password if measurements are taken to ensure
+`~/.nmail/secret.conf` cannot by accessed by a third-party.
+
+
+Configuration
+=============
+
+The following files can be edited to configure nmail:
+
+~/.nmail/main.conf
+------------------
+
+<details>
+  <summary>`~/.nmail/main.conf` (click to expand example and documentation)</summary)
 
     address=example@example.com
     addressbook_encrypt=0
@@ -464,157 +639,14 @@ Allows forcing nmail to enable specified logging level:
     0 = debug, info, warnings, errors (default)
     1 = trace (same as `-e`, `--verbose` - enable verbose logging)
 
-
-Multiple Email Accounts
-=======================
-
-nmail does currently not support multiple email accounts (in a single session).
-It is however possible to run multiple nmail instances in parallel with
-different config directories (and thus different email accounts), but it will
-be just that - multiple instances - each in its own terminal. To facilitate
-such usage one can set up aliases for accessing different accounts, e.g.:
-
-    alias gm='nmail -d ${HOME}/.nmail-gm' # gmail
-    alias hm='nmail -d ${HOME}/.nmail-hm' # hotmail
-
-
-Compose Editor
-==============
-
-The built-in email compose editor in nmail supports the following:
-
-    Alt-Backspace  delete previous word
-    Alt-Delete     delete next word
-    Alt-Left       move the cursor backward one word
-    Alt-Right      move the cursor forward one word
-    Arrow keys     move the cursor
-    Backspace      backspace
-    Ctrl-C         cancel message
-    Ctrl-E         edit message in external editor
-    Ctrl-K         delete current line
-    Ctrl-N         toggle markdown editing
-    Ctrl-O         postpone message
-    Ctrl-R         toggle rich headers (bcc)
-    Ctrl-T         to select, from address book / from file dialog
-    Ctrl-V         preview html part (using markdown to html conversion)
-    Ctrl-X         send message
-    Delete         delete
-    Enter          new line
-    Page Up/Down   move the cursor page up / down
-
-The email headers `To`, `Cc` and `Attchmnt` support comma-separated values, ex:
-
-    To      : Alice <alice@example.com>, Bob <bob@example.com>
-    Cc      : Chuck <chuck@example.com>, Dave <dave@example.com>
-    Attchmnt: localpath.txt, /tmp/absolutepath.txt
-    Subject : Hello world
-
-Attachment paths may be local (just filename) or absolute (full path).
-
-
-Email Search
-============
-
-Press `/` in the message list view to search the local cache for an email. The
-local cache can be fully syncronized with server by pressing `s`. The search
-engine supports queries with `"quoted strings"`, `+musthave`, `-mustnothave`,
-`AND` and `OR`. By default search query words are combined with `AND` unless
-specified. Results are sorted by email timestamp.
-
-Press `<` or `Left` to exit search results and go back to current folder
-message list.
-
-
-Reporting Bugs
-==============
-
-The preferred way of reporting bugs is by opening
-[a Github issue](https://github.com/d99kris/nmail/issues/new). Providing a
-copy of `~/.nmail/log.txt` when reporting the issue is preferred.
-
-A verbose logging mode is supported. It produces very large log files with
-detailed information. The verbose logs typically contain actual email contents.
-Review and edit such logs to remove any private information before sharing.
-To enable verbose logging:
-
-    nmail --verbose
-
-Verbose logging can also be enabled by setting `verbose_logging=1` in
-`~/.nmail/main.conf`.
-
-Finally, for issues where the logging above does not provide sufficient
-information, it may be necessary to run nmail through a debugger and capture
-detailed backtraces for all threads when an issue occurs. A simple utility
-is provided to run `nmail` through a debugger in the source package. Example
-usage:
-
-    ./utils/debug-nmail.sh
-
-The utility also supports passing arguments to nmail, enabling running nmail
-with a custom config directory, for example:
-
-    ./utils/debug-nmail.sh -d ~/.nmail-hm
-
-Once nmail exits, either normally or caused by a crash, the script outputs
-information on where to obtain the log file, for example:
-
-    gdb log file written to:
-    /tmp/nmail-gdb-5244.txt
-
-Review the resulting log file and ensure there are no clear text passwords
-in it, before sharing it with others.
-
-
-User Discussion Forums
-======================
-
-For discussing nmail usage (including getting help from other users) a mailing
-list and a Telegram group are available.
-
-Bug reports and feature requests should however be reported using
-[Github issues](https://github.com/d99kris/nmail/issues/new) to ensure they
-are properly tracked and get addressed.
-
-Mailing List
-------------
-Feel free to subscribe at
-[www.freelists.org/list/nmail-users](http://www.freelists.org/list/nmail-users)
-and once subscribed, send messages to nmail-users [at] freelists [dot] org
-
-Telegram Group
---------------
-The Telegram group is available at
-[https://t.me/nmailusers](https://t.me/nmailusers)
-
-
-Security
-========
-
-nmail caches data locally to improve performance. By default the cached
-data is encrypted (`cache_encrypt=1` in main.conf). Messages are encrypted
-using OpenSSL AES256-CBC with a key derived from a random salt and the
-email account password. Folder names are hashed using SHA256 (thus
-not encrypted).
-
-Using the command line tool `openssl` it is possible to decrypt locally
-cached messages / headers. Example (enter email account password at prompt):
-
-    openssl enc -d -aes-256-cbc -md sha1 -in ~/.nmail/cache/imap/B5/152.eml
-
-Storing the account password (`save_pass=1` in main.conf) is *not* secure.
-While nmail encrypts the password, the key is trivial to determine from
-the source code. Only store the password if measurements are taken to ensure
-`~/.nmail/secret.conf` cannot by accessed by a third-party.
-
-
-Configuration
-=============
-
-Aside from `main.conf` covered above, the following files can be used to
-configure nmail.
+</details>
 
 ~/.nmail/ui.conf
 ----------------
+
+<details>
+  <summary>`~/.nmail/ui.conf` (click to expand example and documentation)</summary>
+
 This configuration file controls the UI aspects of nmail. Default configuration
 file (platform-dependent defaults are left empty below):
 
@@ -760,10 +792,10 @@ Notify user when unsupported keyboard shortcuts are input (default enabled).
 
 Keyboard bindings for various functions (default see above). The keyboard
 bindings may be specified in the following formats:
-- Ncurses macro (ex: `KEY_CTRLK`)
-- Hex key code (ex: `0x22e`)
-- Octal key code sequence (ex: `\033\177`)
-- Plain-text lower-case ASCII (ex: `r`)
+- Ncurses macro (_e.g._, `KEY_CTRLK`)
+- Hex key code (_e.g._, `0x22e`)
+- Octal key code sequence (_e.g._, `\033\177`)
+- Plain-text lower-case ASCII (_e.g._, `r`)
 
 Octal key code sequence for a key combination can be determined for example
 using the command `sed -n l` and pressing the combination, e.g. `alt-left`
@@ -875,9 +907,14 @@ space between tab stops (default 8).
 Controls which character to indicate that an email is unread (default: `N`).
 For a more graphical interface, an emoji such as `✉` can be used.
 
+</details>
 
 ~/.nmail/colors.conf
 --------------------
+
+<details>
+  <summary>`~/.nmail/colors.conf` (click to expand example and documentation)</summary>
+
 This configuration file controls the configurable colors of nmail. For this
 configuration to take effect, `colors_enabled=1` must be set in
 `~/.nmail/ui.conf`.
@@ -965,9 +1002,14 @@ Selected messages in message list view.
 
 Top / title bar.
 
+</details>
 
 ~/.nmail/auth.conf
 ------------------
+
+<details>
+  <summary>`~/.nmail/auth.conf` (click to expand)</summary>
+
 This configuration file allows users to set up custom OAuth 2.0 client id and
 client secret. If not specified, nmail uses its own application id and secret.
 Default configuration file:
@@ -983,12 +1025,18 @@ Custom OAuth 2.0 client id.
 
 Custom OAuth 2.0 client secret.
 
+</details>
+
 
 Email Service Providers
 =======================
 
 Gmail Prerequisites
 -------------------
+
+<details>
+  <summary>Click to expand</summary>i
+
 Gmail prevents IMAP access by default.
 
 In order to enable IMAP access go to the Gmail web interface - typically
@@ -1018,11 +1066,16 @@ the google account address you would like to be invited.
 Alternatively a user may set up their own OAuth 2.0 application with Google
 and configure `~/.nmail/auth.conf` accordingly.
 
+</details>
+
 
 Accessing Email Cache using Other Email Clients
 ===============================================
 
-With cache encryption disabled (`cache_encrypt=0` in main.conf), nmail stores
+<details>
+  <summary>Click to expand</summary>
+ 
+With cache encryption disabled (`cache_encrypt=0` in `main.conf`), nmail stores
 the locally cached messages in a format similar to Maildir. While individual
 messages (`.eml` files) can be opened using many email clients, a script is
 provided to export a Maildir copy of the entire nmail cache. Example usage:
@@ -1042,9 +1095,14 @@ email account is lost, and one needs a local Maildir archive to import into
 a new email account. Such import is not supported by nmail, but is supported
 by some other email clients, like Thunderbird.
 
+</details>
+
 
 Technical Details
 =================
+
+<details>
+  <summary>Click to expand</summary>
 
 Third-party Libraries
 ---------------------
@@ -1063,6 +1121,8 @@ Code Formatting
 Uncrustify is used to maintain consistent source code formatting, example:
 
     uncrustify -c etc/uncrustify.cfg --replace --no-backup src/*.cpp src/*.h
+
+</details>
 
 
 License
